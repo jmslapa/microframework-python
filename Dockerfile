@@ -2,8 +2,13 @@ FROM python:3.9.5
 
 RUN pip install uwsgi
 
-COPY . /var/www
+COPY . /home/www-data/local/www
 
-WORKDIR /var/www
+RUN usermod -u 1000 www-data \
+    && groupmod -g 1000 www-data
 
-CMD uwsgi --http :80 --master --processes 2 --threads 2 --wsgi-file /var/www/index.py
+user www-data
+
+WORKDIR /home/www-data/local/www
+
+CMD uwsgi wsgi.ini

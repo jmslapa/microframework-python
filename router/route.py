@@ -1,17 +1,24 @@
 from importlib import import_module
+from router.group import RouteGroup
+from http.payload import ResponsePayload
+from router.interfaces import RouteComponent
 
-class Route:
-    _method = None
-    _path = None
-    _controller = None
-    _action = None
-    _namespace = None
+class Route(RouteComponent):
+    __method = None
+    __path = None
+    __controller = None
+    __action = None
+    __namespace = None
 
     def __init__(self, method:str, path:str, controller:str, action:str):
-        self._method = method
-        self._path = path
-        self._controller = controller
-        self._action = action
+        self.__method = method
+        self.__setPath(path)
+        self.__controller = controller
+        self.__action = action
+
+    def __setPath(self, path: str):
+        self.__path = (path if path != '' and path[0] == '/' else f'/{path}')
+        self.__path = self.__path[:-1] if self.__path[-1] == '/' else self.__path
 
     @classmethod
     def get(self, path: str, controller: str, action: str):
@@ -33,16 +40,24 @@ class Route:
     def delete(self, path: str, controller: str, action: str):
         return self('DELETE', path, controller, action)
 
-    def check(self, method: str, path: str):
-        return method == self._method and path == self._path
+    @staticmethod
+    def group(routes: "list[Route]") -> RouteComponent:
+        return RouteGroup(routes)
 
-    def namespace(self, namespace: str):
-        self._namespace = namespace
+    def check(self, method: str, path: str) -> bool:
+        return method == self.__method and path == self.__path
+
+    def namespace(self, namespace: str) -> RouteComponent:
+        self.__namespace = namespace
+        return self
+
+    def prefix(self, prefix: str) -> RouteComponent:
+        self.__setPath((prefix if prefix[0] == '/' else f'/{prefix}') + (self.__path if self.__path != '/' else ''))
         return self
     
-    def handle(self):
-        module = import_module(self._namespace)
-        class_ = getattr(module, self._controller)
+    def handle(self) -> ResponsePayload:
+        module = import_module(self.__namespace)
+        class_ = getattr(module, self.__controller)
         controller = class_()
-        action = getattr(controller, self._action)
+        action = getattr(controller, self.__action)
         return action()

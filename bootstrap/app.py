@@ -1,3 +1,4 @@
+from http.payload import ResponsePayload
 from support.request import Request
 from http.response import html
 from router.route import Route
@@ -5,11 +6,14 @@ from router.route import Route
 class Application():
 
     routes = [
-        Route.get('/', 'IndexController', 'index').namespace('controllers.index'),
-        Route.get('/show', 'IndexController', 'show').namespace('controllers.index')
+        Route.group([
+            Route.get('/', 'IndexController', 'index'),
+            Route.get('/show/', 'IndexController', 'show')
+        ]).prefix('api').namespace('controllers.index')
     ]
 
-    def run(self, method, path):
+    def run(self, method, path) -> ResponsePayload:
+        path = path[:-1] if path[-1] == '/' else path
         for route in self.routes:
             if route.check(method, path):
                 return route.handle()

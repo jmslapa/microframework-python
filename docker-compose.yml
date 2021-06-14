@@ -3,6 +3,6 @@ services:
     python:
         build: .
         volumes:
-            - .:/var/www
+            - .:/home/www-data/local/www
         ports:
             - 8080:8080

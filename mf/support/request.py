@@ -13,8 +13,7 @@ class Request:
         return cls.__instance
 
     def setEnv(self, env) -> Request:
-        if self.__env == None:
-            self.__env = env
+        self.__env = env
         return self
 
     @property

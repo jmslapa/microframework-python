@@ -1,7 +1,7 @@
 from importlib import import_module
-from router.group import RouteGroup
-from http.payload import ResponsePayload
-from router.interfaces import RouteComponent
+from mf.router.group import RouteGroup
+from mf.support.payload import ResponsePayload
+from mf.router.interfaces import RouteComponent
 
 class Route(RouteComponent):
     __method = None
@@ -9,6 +9,7 @@ class Route(RouteComponent):
     __controller = None
     __action = None
     __namespace = None
+    __middlewares = None
 
     def __init__(self, method:str, path:str, controller:str, action:str):
         self.__method = method
@@ -54,10 +55,21 @@ class Route(RouteComponent):
     def prefix(self, prefix: str) -> RouteComponent:
         self.__setPath((prefix if prefix[0] == '/' else f'/{prefix}') + (self.__path if self.__path != '/' else ''))
         return self
+
+    def middleware(self, middlewares: "list[tuple(str, str)]") -> RouteComponent:
+        self.__middlewares = middlewares
+        return self
     
     def handle(self) -> ResponsePayload:
+        controller = None
         module = import_module(self.__namespace)
-        class_ = getattr(module, self.__controller)
-        controller = class_()
+        controllerClass = getattr(module, self.__controller)
+        controller = controllerClass()
+
+        for namespace, class_ in self.__middlewares:
+            module = import_module(namespace)
+            middlwareClass = getattr(module, class_)
+            controller = middlwareClass(controller)
+
         action = getattr(controller, self.__action)
         return action()

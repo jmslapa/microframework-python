@@ -1,5 +1,5 @@
-from http.payload import ResponsePayload
-from router.interfaces import RouteComponent
+from mf.support.payload import ResponsePayload
+from mf.router.interfaces import RouteComponent
 
 class RouteGroup(RouteComponent):
 
@@ -24,6 +24,11 @@ class RouteGroup(RouteComponent):
     def prefix(self, prefix: str) -> RouteComponent:
         for route in self.__routes:
             route.prefix(prefix)
+        return self
+    
+    def middleware(self, middlewares: "list[tuple(str, str)]") -> RouteComponent:
+        for route in self.__routes:
+            route.middleware(middlewares)
         return self
     
     def handle(self) -> ResponsePayload:

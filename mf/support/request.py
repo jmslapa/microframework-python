@@ -1,6 +1,6 @@
+from __future__ import annotations
 import cgi
 from json import dumps, loads
-from __future__ import annotations
 
 class Request:
     __env = None

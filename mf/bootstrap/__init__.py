@@ -1,1 +1,1 @@
-from bootstrap.app import *
+from mf.bootstrap.app import *

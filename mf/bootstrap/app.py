@@ -1,8 +1,7 @@
-from router.interfaces import RouteComponent
-from http.payload import ResponsePayload
-from support.request import Request
-from http.response import html
-from router.route import Route
+from mf.router.interfaces import RouteComponent
+from mf.support.payload import ResponsePayload
+from mf.support.request import Request
+from mf.support.response import html
 
 class Application():
 

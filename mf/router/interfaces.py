@@ -1,6 +1,6 @@
 from __future__ import annotations
 from abc import ABC, abstractclassmethod, abstractmethod
-from http.payload import ResponsePayload
+from mf.support.payload import ResponsePayload
 
 class RouteComponent(ABC):
     
@@ -14,6 +14,15 @@ class RouteComponent(ABC):
 
     @abstractmethod
     def prefix(self, prefix: str) -> RouteComponent:
+        pass
+
+    @abstractmethod
+    def middleware(self, middlewares: "list[tuple(str, str)]") -> RouteComponent:        
+        """
+        Vincula middlewares
+
+        :param list[tuple(str, str)] middlewares: Lista de tuplas (namespace, classe) que representam um middleware
+        """
         pass
     
     @abstractmethod

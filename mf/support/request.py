@@ -5,6 +5,7 @@ from json import dumps, loads
 class Request:
     __env = None
     __instance = None
+    __body = None
 
     @classmethod
     def getInstance(cls) -> Request:
@@ -14,6 +15,11 @@ class Request:
 
     def setEnv(self, env) -> Request:
         self.__env = env
+        self.setBody(self.__extractBody())
+        return self
+
+    def setBody(self, body: dict) -> Request:
+        self.__body = body
         return self
 
     @property
@@ -43,10 +49,7 @@ class Request:
 
     @property
     def body(self) -> dict:
-        if 'multipart/form-data' in self.contentType: 
-            return self.__parseFormData()
-        elif 'application/json' in self.contentType:
-            return loads(self.__env.get('wsgi.input').read().decode('utf-8'))
+        return self.__body
 
     @property
     def files(self) -> dict:
@@ -57,6 +60,12 @@ class Request:
                 files[key] = formData[key]
 
         return files
+
+    def __extractBody(self) -> dict:
+        if 'multipart/form-data' in self.contentType: 
+            return self.__parseFormData()
+        elif 'application/json' in self.contentType:
+            return loads(self.__env.get('wsgi.input').read().decode('utf-8'))
 
     def __parseFormData(self):
         formData = cgi.FieldStorage(environ=self.__env, fp=self.__env['wsgi.input'], keep_blank_values=True)        

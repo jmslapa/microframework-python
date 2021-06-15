@@ -1,11 +1,15 @@
+from mf.support import response
+from mf.support.payload import ResponsePayload
 from mf.http.middleware import Middleware
-
+from json import loads, dumps
 class TesteMiddleware(Middleware):
     
     def _before(self):
-        # raise Exception('Middleware chamado antes')
+        # self._request.body['example'] = 'Micro-' + self._request.body['example']
         pass
     
-    def _after(self, resource):
-        # raise Exception(f'Middleware chamado depois. O recurso é: {resource}')
+    def _after(self, resource: ResponsePayload):
+        # json = loads(resource.body.decode('utf-8'))
+        # json['message'] = json['message'] + ' construído em Python'
+        # return response.json(json)
         pass

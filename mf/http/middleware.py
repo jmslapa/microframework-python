@@ -13,7 +13,7 @@ class Middleware(Controller):
         if hasattr(self.__controller, attr):
             def wrapper(*args, **kw):
                 resource = getattr(self.__controller, attr)(*args, **kw)
-                self._after(resource)
+                resource = self._after(resource) or resource
                 return resource
         return wrapper
 

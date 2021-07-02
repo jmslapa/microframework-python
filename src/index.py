@@ -9,7 +9,7 @@ routes = [
     .prefix('api')
     .namespace('src.controllers.test')
     .middleware([
-        ('src.middlewares.test', 'TesteMiddleware')
+        # ('src.middlewares.test', 'TesteMiddleware')
     ])
 ]
 

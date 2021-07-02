@@ -5,11 +5,11 @@ from json import loads, dumps
 class TesteMiddleware(Middleware):
     
     def _before(self):
-        # self._request.body['example'] = 'Micro-' + self._request.body['example']
+        self._request.body['example'] = 'Micro-' + self._request.body['example']
         pass
     
     def _after(self, resource: ResponsePayload):
-        # json = loads(resource.body.decode('utf-8'))
-        # json['message'] = json['message'] + ' construído em Python'
-        # return response.json(json)
+        json = loads(resource.body.decode('utf-8'))
+        json['message'] = json['message'] + ' construído em Python'
+        return response.json(json)
         pass

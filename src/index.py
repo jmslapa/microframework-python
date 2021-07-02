@@ -3,7 +3,7 @@ from mf.bootstrap.app import Application
 
 routes = [
     Route.group([
-        Route.get('/', 'TestController', 'index'),
+        Route.post('/', 'TestController', 'index'),
         Route.get('/show', 'TestController', 'show')
     ])
     .prefix('api')

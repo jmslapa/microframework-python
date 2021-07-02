@@ -36,7 +36,7 @@ class Request:
 
     @property
     def contentLengh(self):
-        return self.__env.get('CONTENT_LENGTH')
+        return self.__env.get('CONTENT_LENGTH') or 0
 
     @property
     def query(self) -> dict:
@@ -62,13 +62,25 @@ class Request:
         return files
 
     def __extractBody(self) -> dict:
-        if 'multipart/form-data' in self.contentType: 
+        if self.contentType is None:
+            return {}
+        elif 'multipart/form-data' in self.contentType:
             return self.__parseFormData()
-        elif 'application/json' in self.contentType:
+        elif 'x-www-form-urlencoded' in self.contentType:
+            return self.__parseUrlEncoded()
+        elif ('application/json' in self.contentType):
             return loads(self.__env.get('wsgi.input').read().decode('utf-8'))
 
+    def __parseUrlEncoded(self):
+        body = {}
+        tuples = str(self.__env.get('wsgi.input').read().decode('utf-8')).split('&')
+        for tuple in tuples:
+            key, value = tuple.split('=')
+            body[key] = value
+        return body
+
     def __parseFormData(self):
-        formData = cgi.FieldStorage(environ=self.__env, fp=self.__env['wsgi.input'], keep_blank_values=True)        
+        formData = cgi.FieldStorage(environ=self.__env, fp=self.__env['wsgi.input'], keep_blank_values=True)
         data = {}
         for key in formData.keys():
             val = formData[key].value
